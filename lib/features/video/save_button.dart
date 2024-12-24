@@ -13,11 +13,17 @@ class SaveButton extends StatefulWidget {
   final String videoPath;
   final double videoStartInMs;
   final double videoEndInMs;
+  final String? imagePath;
+  final double? stickerX;
+  final double? stickerY;
   const SaveButton({
     super.key,
     required this.videoStartInMs,
     required this.videoEndInMs,
     required this.videoPath,
+    this.stickerX,
+    this.stickerY,
+    this.imagePath,
   });
 
   @override
@@ -45,17 +51,26 @@ class _SaveButtonState extends State<SaveButton> {
 
   void _editWithFFmpeg() async {
     final outputPath = await getOutputFilePath();
+    final stickerPath = await FileUtils.getAssetPath(widget.imagePath ?? "");
 
     final trim = '-ss ${widget.videoStartInMs}ms -to ${widget.videoEndInMs}ms';
 
-    final command = '-y $trim -i "${widget.videoPath}" "$outputPath"';
+    final overlay = stickerPath == null
+        ? ''
+        : '-i "$stickerPath" -filter_complex [1:v]scale=200:200[scaled];[0:v][scaled]overlay=x=\'${widget.stickerX}\':y=\'${widget.stickerY}\'';
+    
+    // const defaultSetting = '-c:v libx264 -pix_fmt yuv420p -preset slow -crf 20';
+    const defaultSetting = '';
+
+    final command = '-y $trim -i "${widget.videoPath}" $overlay $defaultSetting "$outputPath"';
+
+    log("command: $command");
 
     await FFmpegKit.executeAsync(
       command,
       (session) async {
         final returnCode = await session.getReturnCode();
         if (ReturnCode.isSuccess(returnCode)) {
-
           await Gal.putVideo(outputPath).then((_) {
             FileUtils.deleteFile(outputPath);
           });
@@ -75,6 +90,9 @@ class _SaveButtonState extends State<SaveButton> {
 
           log("Edit video success");
         } else {
+          if (mounted) {
+            Navigator.of(context).pop();
+          }
           log("Error occurred!");
         }
       },
@@ -133,3 +151,7 @@ class _SaveButtonState extends State<SaveButton> {
     );
   }
 }
+
+// test
+  // const drawBox = '[overlay];[overlay]drawbox=x=30:y=30:w=100:h=100:color=white:t=fill';
+  // final command = '-y $trim -i "${widget.videoPath}" $overlay$drawBox "$outputPath"';

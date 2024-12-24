@@ -116,7 +116,14 @@ FFmpeg is the leading multimedia framework, able to decode, encode, transcode, m
 
 ## Basic options
 1. Global options:
-- **-y**: Overwrite the output
+- **-y**: overwrite the output
+- **filter_complex**: modify frames
+    - Basic syntax
+    ``` 
+    FILTER_NAME=ARGUMENT1=VALUE1:ARGUMENT2=VALUE2 
+    ```
+    - Multiple filters in a chain: separate them with a ,
+    - Multiple chains: separate them with a ;
 
 2. Input options:
 - **-i**: The input file
@@ -145,6 +152,14 @@ FFmpeg is the leading multimedia framework, able to decode, encode, transcode, m
 - **-ac**: channel
     - -ac 1: for mono
     - -ac 2: for stereo
+- **-c:v**: video codec
+- **-c:a**: audio codec
+    - **copy**: copy video/ audio codec
+    - **-an**: no audio
+    - **-vn**: no video
+
+- **scale**: 
+
 
 
 ## Commands

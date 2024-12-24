@@ -21,34 +21,40 @@ class _SelectVideoViewState extends State<SelectVideoView> {
   @override
   Widget build(BuildContext context) {
     final width = MediaQuery.sizeOf(context).width;
+    final height = MediaQuery.sizeOf(context).height;
 
     return SafeArea(
       child: Scaffold(
-        body: SizedBox(
-          width: width,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              SizedBox(
-                width: width * 0.8,
-                child: selectedVideo == null
-                    ? const SizedBox()
-                    : VideoPlayerWidget(file: selectedVideo!),
-              ),
-              const SizedBox(height: 20),
-              CustomTextButton(
-                label: "Select a video",
-                onPressed: getVideo,
-                icon: const Icon(Icons.add_a_photo),
-              ),
-              const SizedBox(height: 20),
-              CustomTextButton(
-                label: "Edit video",
-                onPressed: navigateToEditView,
-                icon: const Icon(Icons.edit),
-              ),
-            ],
+        body: SingleChildScrollView(
+          child: SizedBox(
+            width: width,
+            height: selectedVideo != null ? null : height,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                if (selectedVideo != null) const SizedBox(height: 30),
+                SizedBox(
+                  width: width * 0.8,
+                  child: selectedVideo == null
+                      ? const SizedBox()
+                      : VideoPlayerWidget(file: selectedVideo!),
+                ),
+                const SizedBox(height: 20),
+                CustomTextButton(
+                  label: "Select a video",
+                  onPressed: getVideo,
+                  icon: const Icon(Icons.add_a_photo),
+                ),
+                const SizedBox(height: 20),
+                CustomTextButton(
+                  label: "Edit video",
+                  onPressed: navigateToEditView,
+                  icon: const Icon(Icons.edit),
+                ),
+                if (selectedVideo != null) const SizedBox(height: 20),
+              ],
+            ),
           ),
         ),
       ),
